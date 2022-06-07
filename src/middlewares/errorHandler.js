@@ -1,11 +1,7 @@
-export default (err, req, res, next) => {
-    if (err.status < 500) {
-        return res.status(err.status).json({
-            status: err.status,
-            message: err.message,
-            name: err.name
-        });
+export default (error, req, res, next) => {
+    if (error.status < 500) {
+        return res.status(error.status).json(error)
     } else {
-        return next(err);
+        return next(error)
     }
-};
+}

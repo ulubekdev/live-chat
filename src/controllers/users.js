@@ -12,12 +12,6 @@ const register = async (req, res, next) => {
         if(!userimg.mimetype.includes('image')) {
             return next(new ValidationError(400, 'File is not an image'));
         }
-
-        const user = await req.models.User.create({
-            username: req.body.username,
-            password: sha256(req.body.password),
-            userimg
-        });
     
         let fileName = Date.now() + '-' + userimg.image.name;
         let filePath = path.join(process.cwd(), 'src', 'uploads', 'images', fileName);
@@ -26,6 +20,15 @@ const register = async (req, res, next) => {
             if(error) {
                 return next(new InternalServerError(500, error.message));
             }
+        });
+
+        const user = await req.models.User.create({
+            username: req.body.username,
+            password: sha256(req.body.password),
+            userimg: fileName
+        }, {
+            returning: true,
+            fields: ['username', 'userimg']
         });
 
         res.status(201).json({
@@ -45,12 +48,17 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
     try {
+        let { username, password } = req.body;
         let user = await req.models.User.findOne({
             where: {
-                username: req.body.username,
-                password: sha256(req.body.password)
+                username,
+                password: sha256(password)
+            },
+            attributes: {
+                exclude: ['password']
             }
         });
+
         if(!user) {
             return next(new AuthorizationError(401, 'Invalid username or password'));
         }
@@ -71,7 +79,11 @@ const login = async (req, res, next) => {
 
 const getAllUsers = async (req, res, next) => {
     try {
-        let users = await req.models.User.findAll();
+        let users = await req.models.User.findAll({
+            attributes: {
+                exclude: ['password']
+            }
+        });
         res.status(200).json({
             status: 200,
             message: 'Users fetched',
@@ -83,30 +95,34 @@ const getAllUsers = async (req, res, next) => {
     }
 };
 
-const getUserById = async (req, res, next) => {
-    try {
-        let user = await req.models.User.findOne({
-            where: {
-                user_id: req.params.user_id
-            }
-        });
+// const getUserById = async (req, res, next) => {
+//     try {
+//         let user = await req.models.User.findOne({
+//             where: {
+//                 user_id: req.params.user_id
+//             },
+//             attributes: {
+//                 exclude: ['password']
+//             }
+//         });
         
-        if(!user) {
-            return next(new NotFoundError(404, 'User not found'));
-        }
-        res.status(200).json({
-            status: 200,
-            message: 'User fetched',
-            data: user,
-            token: null
-        });
-    } catch (error) {
-        return next(new InternalServerError(500, error.message));
-    }
-};
+//         if(!user) {
+//             return next(new NotFoundError(404, 'User not found'));
+//         }
+//         res.status(200).json({
+//             status: 200,
+//             message: 'User fetched',
+//             data: user,
+//             token: null
+//         });
+//     } catch (error) {
+//         return next(new InternalServerError(500, error.message));
+//     }
+// };
+
 export default {
     register,
     login,
     getAllUsers,
-    getUserById
+    // getUserById
 }

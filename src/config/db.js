@@ -1,6 +1,8 @@
 import { Sequelize } from "sequelize";
-import models from "../models/index.js";
 import { InternalServerError } from "../utils/errors.js";
+
+import UserModel from "../models/User.js";
+// import MessageModel from "../models/Message.js";
 
 const sequelize = new Sequelize({
     username: process.env.DB_USER,
@@ -14,15 +16,20 @@ const sequelize = new Sequelize({
 
 export default async () => {
     try {
-        await sequelize.authenticate();
-        console.log('Connection has been established successfully.');
+        // connect to database
+        await sequelize.authenticate()
+        console.log('Database connected!')
 
-        await models({ sequelize });
+        // load models
+        await UserModel({ sequelize });
+        // await MessageModel({ sequelize });
+
+        // sync to database
         await sequelize.sync({ force: true });
 
         return sequelize;
     } catch (error) {
-        console.error('Unable to connect to the database:', error);
+        console.log('Database error: ' + error.message);
         throw new InternalServerError(500, error.message);
     }
 }
