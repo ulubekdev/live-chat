@@ -1,7 +1,7 @@
 import path from 'path';
 import sha256 from 'sha256';
 import JWT from '../utils/jwt.js';
-import { AuthorizationError, ValidationError, InternalServerError } from '../utils/errors.js';
+import { AuthorizationError, ValidationError, InternalServerError, NotFoundError } from '../utils/errors.js';
 
 const register = async (req, res, next) => {
     try {
@@ -99,34 +99,34 @@ const getAllUsers = async (req, res, next) => {
     }
 };
 
-// const getUserById = async (req, res, next) => {
-//     try {
-//         let user = await req.models.User.findOne({
-//             where: {
-//                 user_id: req.params.user_id
-//             },
-//             attributes: {
-//                 exclude: ['password']
-//             }
-//         });
+const getUserById = async (req, res, next) => {
+    try {
+        let user = await req.models.User.findOne({
+            where: {
+                user_id: req.params.user_id
+            },
+            attributes: {
+                exclude: ['password']
+            }
+        });
         
-//         if(!user) {
-//             return next(new NotFoundError(404, 'User not found'));
-//         }
-//         res.status(200).json({
-//             status: 200,
-//             message: 'User fetched',
-//             data: user,
-//             token: null
-//         });
-//     } catch (error) {
-//         return next(new InternalServerError(500, error.message));
-//     }
-// };
+        if(!user) {
+            return next(new NotFoundError(404, 'User not found'));
+        }
+        res.status(200).json({
+            status: 200,
+            message: 'User fetched',
+            data: user,
+            token: null
+        });
+    } catch (error) {
+        return next(new InternalServerError(500, error.message));
+    }
+};
 
 export default {
     register,
     login,
     getAllUsers,
-    // getUserById
+    getUserById
 }
