@@ -2,12 +2,12 @@ export default async({ sequelize }) => {
     await sequelize.models.User.bulkCreate([
         {
             username: 'ali',
-            password: '12345',
+            password: '5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5',
             userimg: 'ali.jpg'
         },
         {
             username: 'lola',
-            password: '54321',
+            password: '20f3765880a5c269b747e1e906054a4b4a3a991259f1e16b5dde4742cec2319a',
             userimg: 'lola.jpg'
         }
     ]);

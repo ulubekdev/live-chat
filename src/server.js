@@ -23,7 +23,7 @@ import logger from './middlewares/logger.js';
     const db = await database();
 
     // mock data
-    await mock({ sequelize: db });
+    // await mock({ sequelize: db });
 
     app.engine('html', ejs.renderFile);
     app.set('view engine', 'html');

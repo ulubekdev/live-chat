@@ -12,7 +12,6 @@ export default ({ sequelize }) => {
             allowNull: false,
             unique: true,
             validate: {
-                len: [3, 20],
                 isAlphanumeric: true
             }
         },
@@ -21,8 +20,6 @@ export default ({ sequelize }) => {
             allowNull: false,
             validate: {
                 isAlphanumeric: true,
-                notEmpty: true,
-                len: [5, 20]
             }
         },
         userimg: {

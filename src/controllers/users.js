@@ -1,35 +1,39 @@
 import path from 'path';
 import sha256 from 'sha256';
 import JWT from '../utils/jwt.js';
-import { AuthorizationError, ValidationError, NotFoundError, InternalServerError } from '../utils/errors.js';
+import { AuthorizationError, ValidationError, InternalServerError } from '../utils/errors.js';
 
 const register = async (req, res, next) => {
     try {
-        let userimg = req.files;
+        let { userimg } = req.files;
+        let { username, password } = req.body;
+
         if(userimg.size > 1024 * 1024 * 2) {
             return next(new ValidationError(400, 'Image size is too big'));
         }
+
         if(!userimg.mimetype.includes('image')) {
             return next(new ValidationError(400, 'File is not an image'));
         }
     
-        let fileName = Date.now() + '-' + userimg.image.name;
-        let filePath = path.join(process.cwd(), 'src', 'uploads', 'images', fileName);
+        let fileName = Date.now() + '-' + userimg.name;
+        let filePath = path.join(process.cwd(), 'uploads', 'images', fileName);
 
-        userimg.image.mv(filePath, (error) => {
+        userimg.mv(filePath, (error) => {
             if(error) {
                 return next(new InternalServerError(500, error.message));
             }
         });
 
         const user = await req.models.User.create({
-            username: req.body.username,
-            password: sha256(req.body.password),
+            username,
+            password: sha256(password),
             userimg: fileName
         }, {
-            returning: true,
-            fields: ['username', 'userimg']
+            returning: true
         });
+
+        user.password = null;
 
         res.status(201).json({
             status: 201,
