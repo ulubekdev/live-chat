@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        // const token = window.localStorage.getItem('token')
+        // if(!token) window.location = '/login'
+    </script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link rel="stylesheet" href="./css/index.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="users-side">
+            <div class="top-nav">
+                <h2>Users</h2>
+            </div>
+            <ul id="chatsList" class="chats-list">
+
+            </ul>
+        </div>
+        <div class="chat-side">
+            <div class="chat-header">
+                <h2 style="display: flex; align-items:center;">
+                    <img width="50" height="50" id="chatPhoto" style="margin-right: 10px; border-radius: 50%">
+                    <span>
+                        <span id="chatUser">Begzod</span>
+                        <span id="chatStatus" style="font-size: 13px; color: green; font-style: italic;">typing...</span>
+                    </span>
+                </h2> 
+            </div>
+            <div id="chatsMain" class="chat-main"></div>
+            <form id="form" action="#" class="chat-footer">
+                <input type="text" style="flex-grow: 0.9;" placeholder="Enter a message." id="textInput" required>
+                <div class="file-upload">
+                    <label for="uploads">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                    </label>
+                    <input type="file" id="uploads" name="uploads">
+                </div>
+            </form>
+        </div>
+        <div class="profile-side">
+            <div class="profile-body">
+                <img id="profileAvatar"  class="profile-avatar">
+                <p id="profileUsername" class="profile-name"></p>
+                <button id="logOut">log out</button>
+            </div>
+            <ul id="uploadedFiles" class="uploaded-file"></ul>
+        </div>
+    </div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="../public/js/home.js"></script>
+</body>
+</html>

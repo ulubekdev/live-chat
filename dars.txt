@@ -1,0 +1,73 @@
+Model
+
+user
+   img, username 
+
+message
+    type, from, body, date, to
+
+// users
+[
+    {
+        userId: 1,
+        username: 'ali',
+        password: 'olma',
+        userImg: 'ali.jpg'
+    },
+    {
+        userId: 2,
+        username: 'nosir',
+        password: 'olma',
+        userImg: 'nosir.jpg'
+    },
+]
+
+// message
+[
+    {
+        messageId: 1,
+        messageFrom: 1,
+        messageTo: 2,
+        messageType: 'plain/text',
+        messageBody: 'Bugun darsga kelasanmi? Yo uxlab qoldingmi?',
+    },
+    {
+        messageId: 1,
+        messageFrom: 2,
+        messageTo: 1,
+        messageType: 'plain/text',
+        messageBody: 'Uxlayapman...',
+    },
+    {
+        messageId: 1,
+        messageFrom: 1,
+        messageTo: 2,
+        messageType: 'image/jpg',
+        messageBody: 'comic.jpg',
+    },
+]
+
+-------------------- API ARCHITECTURE ----------------------------
+
+POST
+/login
+/register
+
+GET
+/users
+/messages
+
+/profileAvatar
+/profileUsername
+
+/download
+/file
+
+POST
+/messages
+
+/PUT
+/messages
+
+/DELETE
+/messages
