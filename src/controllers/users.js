@@ -84,6 +84,11 @@ const login = async (req, res, next) => {
 const getAllUsers = async (req, res, next) => {
     try {
         let users = await req.models.User.findAll({
+            where: {
+                user_id: {
+                    [Op.ne]: req.userId
+                }
+            },
             attributes: {
                 exclude: ['password']
             }

@@ -13,11 +13,11 @@ const sendMessage = async (req, res, next) => {
             const { file } = req.files;
 
             if (!file) {
-                throw new ValidationError(400, "No file provided");
+                return next(new ValidationError(400, "No file provided"));
             }
 
             if (file.size > 1024 * 1024 * 50) {
-                throw new ValidationError(401, 'File size is too big');
+                return next(new ValidationError(401, 'File size is too big'));
             }
 
             const fileName = Date.now() + file.name.replace(/\s/, '');
@@ -139,11 +139,11 @@ const updateMessage = async (req, res, next) => {
         });
 
         if (!msg) {
-            throw new NotFoundError(404, "Message not found");
+            return next(new NotFoundError(404, "Message not found"));
         }
 
         if(msg.message_from !== req.userId && msg.message_type !== 'plain/text') {
-            throw new ValidationError(401, "You are not allowed to edit this message");
+            return next(new ValidationError(401, "You are not allowed to edit this message"));
         }
 
         await req.models.Message.update({
@@ -193,11 +193,11 @@ const deleteMessage = async (req, res, next) => {
         });
 
         if (!msg) {
-            throw new NotFoundError(404, "Message not found");
+            return next(new NotFoundError(404, "Message not found"));
         }
 
         if(msg.message_from !== req.userId) {
-            throw new ValidationError(401, "You are not allowed to delete this message");
+            return next(new ValidationError(401, "You are not allowed to delete this message"));
         }
 
         await req.models.Message.destroy({
