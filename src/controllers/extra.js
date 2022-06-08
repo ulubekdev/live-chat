@@ -8,8 +8,7 @@ const getAvatar = async (req, res, next) => {
                 user_id: req.userId
             }
         });
-        const filePath = path.join('src', 'uploads', 'avatars', user.userimg);
-        res.sendFile(filePath);
+        res.sendFile(path.join(process.cwd(), 'uploads', 'images', user.userimg));
     } catch (error) {
         return next(new InternalServerError(500, error.message));
     }
@@ -29,21 +28,19 @@ const getUsername = async (req, res, next) => {
     }
 };
 
-const downloadFile = async (req, res, next) => {
+const getFile = async (req, res, next) => {
     try {
         const { fileName } = req.params;
-        const filePath = path.join('src', 'uploads', 'files', fileName);
-        res.download(filePath);
+        res.sendFile(path.join(process.cwd(), 'uploads', 'files', fileName));
     } catch (error) {
         return next(new InternalServerError(500, error.message));
     }
 };
 
-const getFile = async (req, res, next) => {
+const downloadFile = async (req, res, next) => {
     try {
         const { fileName } = req.params;
-        const filePath = path.join('src', 'uploads', 'files', fileName);
-        res.sendFile(filePath);
+        res.download(path.join(process.cwd(), 'uploads', 'files', fileName));
     } catch (error) {
         return next(new InternalServerError(500, error.message));
     }
@@ -53,6 +50,6 @@ const getFile = async (req, res, next) => {
 export default {
     getAvatar,
     getUsername,
-    downloadFile,
-    getFile
+    getFile,
+    downloadFile
 }

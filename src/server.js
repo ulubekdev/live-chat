@@ -11,6 +11,7 @@ import mock from './mock.js';
 import database from './config/db.js';
 
 import UserRoute from './routes/users.js';
+import ExtraRoute from './routes/extra.js';
 import MessageRoute from './routes/messages.js';
 
 import logger from './middlewares/logger.js';
@@ -47,6 +48,7 @@ import databaseMiddleware from './middlewares/database.js'
     // routes
     app.use(UserRoute);
     app.use(MessageRoute);
+    app.use(ExtraRoute);
 
     // error handler
     app.use(errorHandler);
