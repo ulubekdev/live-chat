@@ -29,8 +29,7 @@ export default async () => {
 
         return sequelize;
     } catch (error) {
-        console.log(error);
-        console.log('Database error: ' + error.error);
+        console.log('Database error: ' + error.message);
         throw new InternalServerError(500, error.message);
     }
 }

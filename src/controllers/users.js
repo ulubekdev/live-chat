@@ -46,6 +46,9 @@ const register = async (req, res, next) => {
         });
 
     } catch (error) {
+        if(error.name === 'SequelizeUniqueConstraintError') {
+            return next(new ValidationError(400, 'Username is already taken'));
+        }
         return next(new InternalServerError(500, error.message));
     }
 };
