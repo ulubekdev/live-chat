@@ -1,21 +1,19 @@
 import { InternalServerError, NotFoundError, ValidationError } from "../utils/errors.js";
 import { Op } from "sequelize";
 import fs from 'fs/promises';
+import path from "path";
 
 const sendMessage = async (req, res, next) => {
     try {
         let { message_to, message_content } = req.body;
         message_to = parseInt(message_to);
-
         let message;
-        
+
         if (req.files) {
             const { file } = req.files;
-
             if (!file) {
                 return next(new ValidationError(400, "No file provided"));
             }
-
             if (file.size > 1024 * 1024 * 50) {
                 return next(new ValidationError(401, 'File size is too big'));
             }
@@ -31,6 +29,11 @@ const sendMessage = async (req, res, next) => {
             }
 
         } else {
+            message_content = message_content.trim();
+
+            if(message_content.length > 150 || !message_content) {
+                return next(new ValidationError(400, "Message body is required"));
+            }
             message = {
                 message_from: req.userId,
                 message_to,
@@ -132,6 +135,10 @@ const updateMessage = async (req, res, next) => {
         
         messageId = parseInt(messageId);
 
+        if(!message_content.trim() || message_content.length > 150) {
+            return next(new ValidationError(400, "Message body is required"));
+        }
+
         let msg = await req.models.Message.findOne({
             where: {
                 message_id: messageId
@@ -142,7 +149,7 @@ const updateMessage = async (req, res, next) => {
             return next(new NotFoundError(404, "Message not found"));
         }
 
-        if(msg.message_from !== req.userId && msg.message_type !== 'plain/text') {
+        if(msg.message_from !== req.userId || msg.message_type !== 'plain/text') {
             return next(new ValidationError(401, "You are not allowed to edit this message"));
         }
 
@@ -207,7 +214,7 @@ const deleteMessage = async (req, res, next) => {
         });
 
         if(msg.message_type !== 'plain/text') {
-            fs.unlinkSync(path.join(process.cwd(), 'uploads', 'files', msg.message_content));
+            await fs.unlink(path.join(process.cwd(), 'uploads', 'files', msg.message_content));
         }
 
         msg.message_from = await req.models.User.findOne({

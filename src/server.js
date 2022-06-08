@@ -4,18 +4,18 @@ import http from "http";
 import path from 'path';
 import './config/index.js';
 import express  from "express";
-import fileUpload from 'express-fileupload';
 import { Server } from "socket.io";
+import fileUpload from 'express-fileupload';
 
-import database from './config/db.js';
 import mock from './mock.js';
+import database from './config/db.js';
 
 import UserRoute from './routes/users.js';
 import MessageRoute from './routes/messages.js';
 
+import logger from './middlewares/logger.js';
 import errorHandler from './middlewares/errorHandler.js';
 import databaseMiddleware from './middlewares/database.js'
-import logger from './middlewares/logger.js';
 
 !async function() {
     const app = express();

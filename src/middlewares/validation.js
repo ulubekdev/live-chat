@@ -1,4 +1,4 @@
-import { loginSchema, registerSchema, messageSchema } from "../utils/validations.js"
+import { loginSchema, registerSchema } from "../utils/validations.js"
 import { ValidationError } from "../utils/errors.js"
 
 export default (req, res, next) => {
@@ -13,10 +13,6 @@ export default (req, res, next) => {
             if(error) throw error
         }
 
-        if (req.method === 'POST' && req.url == '/messages') {
-            const { error } = messageSchema.validate({ body: req.body })
-            if(error) throw error
-        }
         return next();
     } catch (error) {
         return next(new ValidationError(400, error.message))
