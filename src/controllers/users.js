@@ -8,14 +8,14 @@ const register = async (req, res, next) => {
         let { userimg } = req.files;
         let { username, password } = req.body;
 
+        if (!['image/jpg', 'image/png', 'image/jpeg'].includes(userimg.mimetype)) {
+            return next(new ValidationError(400, 'Image is not a valid image'));
+        }
+
         if(userimg.size > 1024 * 1024 * 2) {
             return next(new ValidationError(400, 'Image size is too big'));
         }
 
-        if(!userimg.mimetype.includes('image')) {
-            return next(new ValidationError(400, 'File is not an image'));
-        }
-    
         let fileName = Date.now() + '-' + userimg.name;
         let filePath = path.join(process.cwd(), 'uploads', 'images', fileName);
 
