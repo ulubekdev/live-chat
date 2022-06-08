@@ -1,5 +1,6 @@
 import path from 'path';
 import sha256 from 'sha256';
+import { Op } from 'sequelize';
 import JWT from '../utils/jwt.js';
 import { AuthorizationError, ValidationError, InternalServerError, NotFoundError } from '../utils/errors.js';
 
