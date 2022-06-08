@@ -11,8 +11,8 @@ export const registerSchema = Joi.object({
 });
 
 export const messageSchema = Joi.object({
-    message_from: Joi.number().required(),
-    message_to: Joi.number().required(),
-    message_content: Joi.string().max(200).required(),
-    message_type: Joi.string().required()
+    body: Joi.object({
+        message_to: Joi.number().required(),
+        message_content: Joi.string().max(200).required()
+    })
 });

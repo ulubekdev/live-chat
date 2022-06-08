@@ -14,11 +14,9 @@ export default (req, res, next) => {
         }
 
         if (req.method === 'POST' && req.url == '/messages') {
-            const { error } = messageSchema.validate(req.body)
+            const { error } = messageSchema.validate({ body: req.body })
             if(error) throw error
         }
-
-
         return next();
     } catch (error) {
         return next(new ValidationError(400, error.message))
