@@ -1,15 +1,17 @@
 import ejs from 'ejs';
 import cors from 'cors';
+import http from "http";
 import path from 'path';
 import './config/index.js';
 import express  from "express";
 import fileUpload from 'express-fileupload';
+import { Server } from "socket.io";
 
 import database from './config/db.js';
 import mock from './mock.js';
 
 import UserRoute from './routes/users.js';
-// import MessageRoute from './routes/message.js';
+import MessageRoute from './routes/messages.js';
 
 import errorHandler from './middlewares/errorHandler.js';
 import databaseMiddleware from './middlewares/database.js'
@@ -17,6 +19,9 @@ import logger from './middlewares/logger.js';
 
 !async function() {
     const app = express();
+    const httpServer = http.createServer(app);
+    const io = new Server(httpServer);
+
     app.use(cors());
 
     // database connection
@@ -41,13 +46,13 @@ import logger from './middlewares/logger.js';
 
     // routes
     app.use(UserRoute);
-    // app.use(MessageRoute)
+    app.use(MessageRoute);
 
     // error handler
     app.use(errorHandler);
     app.use(logger);
 
-    app.listen(process.env.PORT, () => {
+    httpServer.listen(process.env.PORT, () => {
         console.log(`Server is running at http://localhost:${process.env.PORT}`);
     });
 }()

@@ -4,6 +4,8 @@ import { AuthorizationError, InternalServerError } from "../utils/errors.js";
 export default async(req, res, next) => {
     try {
         const { token } = req.headers;
+        if(!token) token = req.params.token;
+
         const users = await req.models.User.findAll(); 
 
         if (!token) {

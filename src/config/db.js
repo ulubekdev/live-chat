@@ -2,7 +2,7 @@ import { Sequelize } from "sequelize";
 import { InternalServerError } from "../utils/errors.js";
 
 import UserModel from "../models/User.js";
-// import MessageModel from "../models/Message.js";
+import MessageModel from "../models/Message.js";
 
 const sequelize = new Sequelize({
     username: process.env.DB_USER,
@@ -22,14 +22,15 @@ export default async () => {
 
         // load models
         await UserModel({ sequelize });
-        // await MessageModel({ sequelize });
+        await MessageModel({ sequelize });
 
         // sync to database
         await sequelize.sync({ alter: false });
 
         return sequelize;
     } catch (error) {
-        console.log('Database error: ' + error.message);
+        console.log(error);
+        console.log('Database error: ' + error.error);
         throw new InternalServerError(500, error.message);
     }
 }
