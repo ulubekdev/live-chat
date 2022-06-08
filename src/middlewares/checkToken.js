@@ -3,10 +3,8 @@ import { AuthorizationError, InternalServerError } from "../utils/errors.js";
 
 export default async(req, res, next) => {
     try {
-        const { token } = req.headers;
+        let { token } = req.headers;
         if(!token) token = req.params.token;
-
-        const users = await req.models.User.findAll(); 
 
         if (!token) {
             return next(new AuthorizationError(401, "No token provided"));
@@ -19,7 +17,11 @@ export default async(req, res, next) => {
             return next(new AuthorizationError(401, "Invalid token"));
         }
 
-        const user = users.find(user => user.user_id === user_id);
+        const user = await req.models.User.findOne({
+            where: {
+                user_id
+            },
+        });
 
         if (!user) {
             return next(new AuthorizationError(401, "Invalid token"));
