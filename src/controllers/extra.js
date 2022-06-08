@@ -31,7 +31,7 @@ const getUsername = async (req, res, next) => {
 const getFile = async (req, res, next) => {
     try {
         const { fileName } = req.params;
-        res.sendFile(path.join(process.cwd(), 'uploads', 'files', fileName));
+        res.sendFile(path.join(process.cwd(), 'uploads', 'images', fileName));
     } catch (error) {
         return next(new InternalServerError(500, error.message));
     }
