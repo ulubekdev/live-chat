@@ -5,19 +5,14 @@ submitButton.addEventListener('click', async (e) => {
     const password = passwordInput.value.trim();
 
     if(!username || !password) {
-        alert('Please fill in the required fields');
+        messageText.textContent = 'Please fill in the required fields';
         return;
     }
 
-    let formData = new FormData();
-    formData.append('username', username);
-    formData.append('password', password);
-
-    let response = await fetch('/login', {
-        method: 'POST',
-        body: formData
+    let response = await request('/login', 'POST', {
+        username,
+        password
     });
-    response = await response.json();
 
     if(response.status === 200) {
         window.location.href = '/';
