@@ -19,10 +19,10 @@ const getUsername = async (req, res, next) => {
         const user = await req.models.User.findOne({
             where: {
                 user_id: req.userId
-            }
+            },
+            attributes: ['username']
         });
-        res.setHeader('Content-Type', 'plain/text');
-        res.send(user.username);
+        res.send(user);
     } catch (error) {
         return next(new InternalServerError(500, error.message));
     }
