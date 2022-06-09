@@ -11,8 +11,27 @@ async function getMessages(userId) {
     renderMessages(messages.data, userId);
 }
 
-async function getFiles() {}
-async function postMessage() {}
+async function updateMessage(event, element, messageId) {
+    if(!updateMessage.cacheText) {
+        updateMessage.cacheText = element.textContent;
+    }
+
+    if(event.keyCode !== 13) return;
+
+    element.textContent = element.textContent.trim();
+    element.blur();
+
+    if(!element.textContent.length) {
+        element.textContent = updateMessage.cacheText;
+        updateMessage.cacheText = null;
+        return;
+    }
+
+    await request('/messages/' + messageId, 'PUT', {
+        message_content: element.textContent
+    })
+    updateMessage.cacheText = null;
+}
 
 async function renderUsers(users) {
     chatsList.innerHTML = '';
@@ -48,7 +67,6 @@ async function renderMessages(messages, myId) {
         const isMyMessage = message.message_from.user_id == myId;
 
         const img = '/file/' + token + '/' + message.message_from.userimg;
-        const file = '/file/' + token + '/' + message.message_content;
         const filee = '/filee/' + token + '/' + message.message_content;
         const downloadLink = '/download/' + token + '/' + message.message_content;
         const username = message.message_from.username;
@@ -67,8 +85,7 @@ async function renderMessages(messages, myId) {
                 <img src="${img}" alt="profile-picture">
                 <div class="msg-text">
                     <p class="msg-author">${username}</p>
-                    <p class="msg">${message.message_content}</p>
-                    <img src="./img/edit.png" width=20px id="editMsg" data-id="${message.message_id}">    
+                    <p class="msg" onkeydown="updateMessage(event, this, ${message.message_id})" contenteditable="true">${message.message_content}</p>
                     <p class="time">${time}</p>
                 </div>
             `
@@ -96,15 +113,63 @@ async function renderMessages(messages, myId) {
         }
         chatsMain.append(div);
     }
+    chatsMain.scrollTop = chatsMain.scrollHeight;
 }
 
+async function postMessage(message, type) {
+    if(type === 'text' && lastSelectedUserId()) {
+        const response = await request('/messages', 'POST', {
+            message_to: lastSelectedUserId(),
+            message_content: message,
+        });
+
+        if(response.status === 200) {
+            renderMessages([response.data], lastSelectedUserId());
+        }
+    } else {
+        const formData = new FormData();
+        formData.append('message_to', lastSelectedUserId());
+        formData.append('file', message);
+
+        const response = await request('/messages', 'POST', formData);
+
+        if(response.status === 200) {
+            renderMessages([response.data], lastSelectedUserId());
+        }
+    }
+
+}
+
+formMessage.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const message = textInput.value.trim();
+
+    if(!message) {
+        return textInput.value = '';
+    }
+
+    if(message.includes('<') && message.includes('>')) {
+        return textInput.value = '';
+    }
+    postMessage(message, 'text');
+    formMessage.reset();
+})
+
+uploadsInput.addEventListener('change', (e) => {
+    const file = uploadsInput.files[0];
+    if(file.size > 1024 * 1024 * 50) {
+        return alert('File size is too big');
+    }
+
+    postMessage(file, 'file');
+    uploadsInput.reset();
+})
 
 async function userInfo() {
     profileAvatar.src = '/avatar/' + token;
     let response = await request('/username/' + token);
     profileUsername.textContent = response.username;
 }
-
 
 logOut.onclick = () => {
     window.localStorage.clear();

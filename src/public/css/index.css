@@ -142,7 +142,7 @@ input[type="file"] {
     padding: 20px 25px;
     height: calc(100vh - 120px);
     overflow-y: scroll;
-    background: url('../img/background.jpg') no-repeat center/cover;
+    background: url('../img/background1.jpg') no-repeat center/cover;
     display: flex;
     flex-direction: column;
 }

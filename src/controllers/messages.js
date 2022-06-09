@@ -29,10 +29,9 @@ const sendMessage = async (req, res, next) => {
             }
 
         } else {
-            message_content = message_content.trim();
-
-            if(message_content.length > 150 || !message_content) {
-                return next(new ValidationError(400, "Message body is required"));
+            if(message_content == undefined) return;
+            if(!message_content.trim() || message_content.length > 150) {
+                return next(new ValidationError(400, "Message content is too long or empty"));
             }
             message = {
                 message_from: req.userId,
