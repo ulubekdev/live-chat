@@ -35,6 +35,12 @@ export default async({ sequelize }) => {
             message_to: 1,
             message_content: 'How are you?',
             message_type: 'plain/text'
+        },
+        {
+            message_from: 1,
+            message_to: 3,
+            message_content: 'lol.jpg',
+            message_type: 'image/jpg'
         }
     ]);
 }

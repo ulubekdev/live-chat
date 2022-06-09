@@ -37,6 +37,15 @@ const getFile = async (req, res, next) => {
     }
 };
 
+const getFilee = async (req, res, next) => {
+    try {
+        const { fileName } = req.params;
+        res.sendFile(path.join(process.cwd(), 'uploads', 'files', fileName));
+    } catch (error) {
+        return next(new InternalServerError(500, error.message));
+    }
+};
+
 const downloadFile = async (req, res, next) => {
     try {
         const { fileName } = req.params;
@@ -51,5 +60,6 @@ export default {
     getAvatar,
     getUsername,
     getFile,
+    getFilee,
     downloadFile
 }

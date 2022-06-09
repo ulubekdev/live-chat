@@ -246,3 +246,16 @@ input[type="file"] {
 .uploaded-file-item a img {
     margin-right: 5px;
 }
+
+#editMsg {
+    display: block;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: flex;
+    cursor: pointer;
+}
+
+#editMsg:hover {
+    display: block;
+}

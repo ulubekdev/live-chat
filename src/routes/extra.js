@@ -8,6 +8,7 @@ router.get('/avatar/:token', checkToken, controller.getAvatar);
 router.get('/username/:token', checkToken, controller.getUsername);
 
 router.get('/file/:token/:fileName', checkToken, controller.getFile);
+router.get('/filee/:token/:fileName', checkToken, controller.getFilee);
 router.get('/download/:token/:fileName', checkToken, controller.downloadFile);
 
 export default router;

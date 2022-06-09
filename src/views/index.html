@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <script>
-        // const token = window.localStorage.getItem('token')
-        // if(!token) window.location = '/login'
+        const token = window.localStorage.getItem('token')
+        if(!token) window.location = '/login'
     </script>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,7 +20,7 @@
                 <h2>Users</h2>
             </div>
             <ul id="chatsList" class="chats-list">
-
+                
             </ul>
         </div>
         <div class="chat-side">
@@ -28,13 +28,15 @@
                 <h2 style="display: flex; align-items:center;">
                     <img width="50" height="50" id="chatPhoto" style="margin-right: 10px; border-radius: 50%">
                     <span>
-                        <span id="chatUser">Begzod</span>
-                        <span id="chatStatus" style="font-size: 13px; color: green; font-style: italic;">typing...</span>
+                        <span id="chatUser"></span>
+                        <span id="chatStatus" style="font-size: 13px; color: green; font-style: italic;"></span>
                     </span>
                 </h2> 
             </div>
-            <div id="chatsMain" class="chat-main"></div>
-            <form id="form" action="#" class="chat-footer">
+            <div id="chatsMain" class="chat-main">
+            </div>
+
+            <form style="display: none;" id="formMessage" action="#" class="chat-footer">
                 <input type="text" style="flex-grow: 0.9;" placeholder="Enter a message." id="textInput" required>
                 <div class="file-upload">
                     <label for="uploads">
@@ -43,6 +45,7 @@
                     <input type="file" id="uploads" name="uploads">
                 </div>
             </form>
+            
         </div>
         <div class="profile-side">
             <div class="profile-body">
@@ -55,6 +58,7 @@
     </div>
 
 <script src="/socket.io/socket.io.js"></script>
-<script src="../public/js/home.js"></script>
+<script src="./js/request.js"></script>
+<script src="./js/home.js"></script>
 </body>
 </html>

@@ -15,7 +15,7 @@ async function request(path, method, body) {
             body,
         })
 
-        if (response.status === 403) {
+        if (response.status === 403 || response.status === 401) {
             window.localStorage.clear()
             window.location = '/login'
         }
