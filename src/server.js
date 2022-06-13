@@ -5,6 +5,7 @@ import path from 'path';
 import './config/index.js';
 import express  from "express";
 import { Server } from "socket.io";
+import socket from './socket/index.js';
 import fileUpload from 'express-fileupload';
 
 import mock from './mock.js';
@@ -16,12 +17,11 @@ import MessageRoute from './routes/messages.js';
 
 import logger from './middlewares/logger.js';
 import errorHandler from './middlewares/errorHandler.js';
-import databaseMiddleware from './middlewares/database.js'
+import databaseMiddleware from './middlewares/database.js';
 
 !async function() {
     const app = express();
     const httpServer = http.createServer(app);
-    const io = new Server(httpServer);
 
     app.use(cors());
 
@@ -54,7 +54,10 @@ import databaseMiddleware from './middlewares/database.js'
     app.use(errorHandler);
     app.use(logger);
 
+    const io = new Server(httpServer);
+    socket({ io, db });
+
     httpServer.listen(process.env.PORT, () => {
         console.log(`Server is running at http://localhost:${process.env.PORT}`);
     });
-}()
+}();
