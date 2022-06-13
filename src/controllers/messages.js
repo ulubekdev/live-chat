@@ -57,11 +57,17 @@ const sendMessage = async (req, res, next) => {
             }
         })
 
+        process.io.to(msg.message_to.socket_id).emit('new-message', msg)
+        if (req.files) {
+            process.io.to(msg.message_to.socket_id).emit('message-stop', { from: msg.message_from.user_id })
+        }
+
         return res.status(200).json({
             status: 200,
             message: 'Message sent',
             data: msg
         });
+        
 
     } catch (error) {
         return next(new InternalServerError(500, error.message));
@@ -167,14 +173,16 @@ const updateMessage = async (req, res, next) => {
             attributes: {
                 exclude: ['password']
             }
-        })
+        });
 
         msg.message_to = await req.models.User.findOne({
             where: { user_id: msg.message_to },
             attributes: {
                 exclude: ['password']
             }
-        })
+        });
+
+        process.io.to(msg.message_to.socket_id).emit('message-update', msg)
 
         return res.status(200).json({
             status: 200,
@@ -229,6 +237,8 @@ const deleteMessage = async (req, res, next) => {
                 exclude: ['password']
             }
         });
+
+        process.io.to(msg.message_to.socket_id).emit('message-delete', msg);
 
         return res.status(200).json({
             status: 200,
