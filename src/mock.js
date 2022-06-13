@@ -39,8 +39,8 @@ export default async({ sequelize }) => {
         {
             message_from: 1,
             message_to: 3,
-            message_content: 'lol.jpg',
-            message_type: 'image/jpg'
+            message_content: 'Konsta - Musofir.mp3',
+            message_type: 'audio/mp3'
         }
     ]);
 }

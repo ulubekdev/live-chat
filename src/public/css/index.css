@@ -274,3 +274,15 @@ input[type="file"] {
 .online-indicator {
     background-color: lime;
 }
+
+.delete-icon {
+    display: none;
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+}
+
+.msg-wrapper:hover .delete-icon-active {
+    display: flex;
+    background-color: black;
+}

@@ -124,7 +124,7 @@ async function renderMessages(messages, myId) {
                     <p class="msg" onkeydown="updateMessage(event, this, ${message.message_id})" ${!isMyMessage ? 'contentEditable' : null}>${message.message_content}</p>
                     <p class="time">${time}</p>
                 </div>
-                <img onclick="deleteMessage(this, event, ${message.message_id})" class="delete-icon ${isMyMessage ? 'delete-icon-active' : ''}" src="https://cdn3.iconfinder.com/data/icons/flat-actions-icons-9/792/Close_Icon_Dark-512.png">
+                <img onclick="deleteMessage(this, event, ${message.message_id})" class="delete-icon ${!isMyMessage ? 'delete-icon-active' : ''}" src="https://cdn3.iconfinder.com/data/icons/flat-actions-icons-9/792/Close_Icon_Dark-512.png">
             `
         } else {
             uploadedFiles.innerHTML += `
@@ -146,7 +146,7 @@ async function renderMessages(messages, myId) {
                     </a>
                     <p class="time">${time}</p>
                 </div>
-                <img onclick="deleteMessage(this, event, ${message.message_id})" class="delete-icon ${isMyMessage ? 'delete-icon-active' : ''}" src="https://cdn3.iconfinder.com/data/icons/flat-actions-icons-9/792/Close_Icon_Dark-512.png">
+                <img onclick="deleteMessage(this, event, ${message.message_id})" class="delete-icon ${!isMyMessage ? 'delete-icon-active' : ''}" src="https://cdn3.iconfinder.com/data/icons/flat-actions-icons-9/792/Close_Icon_Dark-512.png">
             `
         }
         chatsMain.append(div);
