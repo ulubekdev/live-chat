@@ -1,5 +1,10 @@
-const lastSelectedUserId = () => window.localStorage.getItem('lastSelectedUserId');
-let selected;
+let lastSelectedUserId = window.localStorage.getItem('lastSelectedUserId');
+
+const socket = io({
+    auth: {
+        token: window.localStorage.getItem('token')
+    }
+})
 
 async function getAllUsers() {
     let users = await request('/users', 'GET');
@@ -33,6 +38,37 @@ async function updateMessage(event, element, messageId) {
     updateMessage.cacheText = null;
 }
 
+async function deleteMessage(element, event, messagaId) {
+    const response = await request('/messages/' + messagaId, 'DELETE')
+    if (response.status === 200) {
+        element.parentNode.remove();
+    }
+}
+
+async function postMessage(message, type) {
+    if(type === 'text' && lastSelectedUserId) {
+        const response = await request('/messages', 'POST', {
+            message_to: lastSelectedUserId,
+            message_content: message,
+        });
+
+        if(response.status === 200) {
+            renderMessages([response.data], lastSelectedUserId);
+        }
+    } else {
+        const formData = new FormData();
+        formData.append('message_to', lastSelectedUserId);
+        formData.append('file', message);
+
+        const response = await request('/messages', 'POST', formData);
+
+        if(response.status === 200) {
+            renderMessages([response.data], lastSelectedUserId);
+        }
+    }
+
+}
+
 async function renderUsers(users) {
     chatsList.innerHTML = '';
     for (let user of users) {
@@ -41,7 +77,6 @@ async function renderUsers(users) {
         chatsList.innerHTML += `
             <li class="chats-item" onclick="(async function () {
                 window.localStorage.setItem('lastSelectedUserId', ${user.user_id})
-                selected = true
                 chatPhoto.src = '${userImg}'
                 chatUser.textContent = '${user.username}'
 
@@ -53,7 +88,7 @@ async function renderUsers(users) {
                 <img src="${userImg}" alt="profile-picture">
                 <p>
                     ${user.username}
-                    <span data-actionid="${user.user_id}" id="chatStatus"></span> 
+                    <span data-actionid="${user.user_id}"></span>
                     <span data-id="${user.user_id}" class="indicator ${user.socket_id ? 'online-indicator' : ''}">
                     </span>
                 </p>
@@ -77,6 +112,7 @@ async function renderMessages(messages, myId) {
         const time = hour + ':' + minute;
 
         const div = document.createElement('div');
+        div.dataset.id = message.message_id;
         div.classList.add('msg-wrapper');
         !isMyMessage && div.classList.add('msg-from');
 
@@ -85,9 +121,10 @@ async function renderMessages(messages, myId) {
                 <img src="${img}" alt="profile-picture">
                 <div class="msg-text">
                     <p class="msg-author">${username}</p>
-                    <p class="msg" onkeydown="updateMessage(event, this, ${message.message_id})" contenteditable="true">${message.message_content}</p>
+                    <p class="msg" onkeydown="updateMessage(event, this, ${message.message_id})" ${!isMyMessage ? 'contentEditable' : null}>${message.message_content}</p>
                     <p class="time">${time}</p>
                 </div>
+                <img onclick="deleteMessage(this, event, ${message.message_id})" class="delete-icon ${isMyMessage ? 'delete-icon-active' : ''}" src="https://cdn3.iconfinder.com/data/icons/flat-actions-icons-9/792/Close_Icon_Dark-512.png">
             `
         } else {
             uploadedFiles.innerHTML += `
@@ -109,6 +146,7 @@ async function renderMessages(messages, myId) {
                     </a>
                     <p class="time">${time}</p>
                 </div>
+                <img onclick="deleteMessage(this, event, ${message.message_id})" class="delete-icon ${isMyMessage ? 'delete-icon-active' : ''}" src="https://cdn3.iconfinder.com/data/icons/flat-actions-icons-9/792/Close_Icon_Dark-512.png">
             `
         }
         chatsMain.append(div);
@@ -116,29 +154,6 @@ async function renderMessages(messages, myId) {
     chatsMain.scrollTop = chatsMain.scrollHeight;
 }
 
-async function postMessage(message, type) {
-    if(type === 'text' && lastSelectedUserId()) {
-        const response = await request('/messages', 'POST', {
-            message_to: lastSelectedUserId(),
-            message_content: message,
-        });
-
-        if(response.status === 200) {
-            renderMessages([response.data], lastSelectedUserId());
-        }
-    } else {
-        const formData = new FormData();
-        formData.append('message_to', lastSelectedUserId());
-        formData.append('file', message);
-
-        const response = await request('/messages', 'POST', formData);
-
-        if(response.status === 200) {
-            renderMessages([response.data], lastSelectedUserId());
-        }
-    }
-
-}
 
 formMessage.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -153,17 +168,37 @@ formMessage.addEventListener('submit', async (e) => {
     }
     postMessage(message, 'text');
     formMessage.reset();
-})
+});
 
 uploadsInput.addEventListener('change', (e) => {
     const file = uploadsInput.files[0];
+
     if(file.size > 1024 * 1024 * 50) {
         return alert('File size is too big');
     }
 
+    socket.emit('message-file', { to: lastSelectedUserId });
+
     postMessage(file, 'file');
     uploadsInput.reset();
-})
+});
+
+let timeOutId;
+textInput.onkeyup = event => {
+    if(event.keyCode === 13) {
+        timeOutId = undefined;
+        socket.emit('message-stop', { to: lastSelectedUserId });
+    }
+
+    if(timeOutId) return
+
+    socket.emit('message-typing', { to: lastSelectedUserId });
+
+    timeOutId = setTimeout(() => {
+        timeOutId = undefined;
+        socket.emit('message-stop', { to: lastSelectedUserId })
+    }, 2000);
+}
 
 async function userInfo() {
     profileAvatar.src = '/avatar/' + token;
@@ -178,3 +213,54 @@ logOut.onclick = () => {
 
 userInfo();
 getAllUsers();
+
+socket.on('user-exit', () => {
+    window.localStorage.clear();
+    window.location = '/login';
+});
+
+socket.on('user-online', ({ user_id }) => {
+    const span = document.querySelector(`[data-id='${user_id}']`);
+    span.classList.add('online-indicator')
+});
+
+socket.on('user-offline', ({ user_id }) => {
+    const span = document.querySelector(`[data-id='${user_id}']`);
+    span.classList.remove('online-indicator')
+})
+
+socket.on('new-message', (message) => {
+    renderMessages([message], lastSelectedUserId);
+});
+
+socket.on('message-typing', ({ to, from }) => {
+    lastSelectedUserId = +lastSelectedUserId;
+    if(lastSelectedUserId === from) {
+        chatStatus.textContent = 'typing...';
+    }
+});
+
+socket.on('message-stop', ({ to, from }) => {
+    lastSelectedUserId = +lastSelectedUserId;
+    if(lastSelectedUserId === from) {
+        chatStatus.textContent = null;
+    }
+});
+
+socket.on('message-file', ({ from }) => {
+    if(lastSelectedUserId === from) {
+        chatStatus.textContent = 'send file...';
+    }
+})
+
+socket.on('message-update', ({ message_id, message_content }) => {
+    const p = document.querySelector(`[data-id='${message_id}']`).querySelector('.msg');
+    p.textContent = message_content;
+})
+
+socket.on('message-delete', ({ message_id, message_from }) => {
+    const div = document.querySelector(`[data-id='${message_id}']`);
+    if(lastSelectedUserId == message_from.user_id && div) {
+        div.remove();
+    }
+})

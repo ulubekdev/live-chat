@@ -189,8 +189,15 @@ input[type="file"] {
     opacity: 0.7;
     font-weight: 500;
 }
-.msg-from > img {
-    margin-left: auto;
+
+.msg-from {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.msg-from img {
+    margin-right: 0;
+    margin-left: 20px;
 }
 
 .profile-side {
@@ -247,15 +254,23 @@ input[type="file"] {
     margin-right: 5px;
 }
 
-#editMsg {
-    display: block;
+.indicator {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
     position: absolute;
-    top: 5px;
-    right: 5px;
-    display: flex;
-    cursor: pointer;
+    top: 50%;
+    bottom: 0;
+    left: 50px;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    font-size: 10px;
+    width: 10px;
+    height: 10px;
+    font-weight: bold;
+    color: orange;
 }
 
-#editMsg:hover {
-    display: block;
+.online-indicator {
+    background-color: lime;
 }
