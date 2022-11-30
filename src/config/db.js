@@ -25,7 +25,7 @@ export default async () => {
         await MessageModel({ sequelize });
 
         // sync to database
-        await sequelize.sync({ alter: false });
+        await sequelize.sync({ alter: true })
 
         return sequelize;
     } catch (error) {
