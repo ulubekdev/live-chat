@@ -23,7 +23,6 @@ export default async ({ io, socket, db }) => {
         }
 
         socket.userId = user_id;
-
         await db.models.User.update({
             socket_id: socket.id
         }, { where: { user_id } } );

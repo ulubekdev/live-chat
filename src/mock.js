@@ -4,12 +4,12 @@ export default async ({ sequelize }) => {
         {
             username: 'ali',
             password: '5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5',
-            userimg: 'ali.png',
+            userimg: 'ali.jpg',
         },
         {
             username: 'nosir',
             password: '5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5',
-            userimg: 'ali.png',
+            userimg: 'nosir.jpg',
         },
     ])
 
