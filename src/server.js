@@ -8,8 +8,8 @@ import { Server } from "socket.io";
 import socket from './socket/index.js';
 import fileUpload from 'express-fileupload';
 
+import mock from './mock.js';
 import database from './config/db.js';
-import mockData from './mock.js'
 
 import UserRoute from './routes/users.js';
 import ExtraRoute from './routes/extra.js';
@@ -27,7 +27,9 @@ import databaseMiddleware from './middlewares/database.js';
 
     // database connection
     const db = await database();
-    await mockData({ sequelize: db });
+
+    // mock data
+    // await mock({ sequelize: db });
 
     app.engine('html', ejs.renderFile);
     app.set('view engine', 'html');
